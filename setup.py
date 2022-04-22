@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='pandas_accessors',
-    version='0.0.0.1',
-    packages=['pda'],
+    version='0.0.0.2',
+    packages=['pandas_accessors'],
     url='',
     license='',
     author='bjahnke',

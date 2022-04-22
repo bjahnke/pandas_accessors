@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from abc import ABCMeta, abstractmethod
 import typing as t
-import pda.utils
+import pandas_accessors.utils
 
 
 def _validate(items: t.List[str], mandatory: t.List[str]):
@@ -143,7 +143,7 @@ class PriceTable(Table):
 
     @property
     def d1_returns(self):
-        return pda.utils.simple_log_returns(self.close)
+        return pandas_accessors.utils.simple_log_returns(self.close)
 
 
 class PivotTable(Table, metaclass=ABCMeta):
@@ -229,7 +229,7 @@ class SignalTable(PivotTable):
     def pyramid(self, base_risk) -> pd.Series:
         """Note: should only be used per regime, not on entire signal table"""
         row_count = pd.Series(data=self.counts) - 1
-        return pda.utils.pyramid(row_count, root=2) * base_risk
+        return pandas_accessors.utils.pyramid(row_count, root=2) * base_risk
 
     def absolute_stop(self, benchmark_prices: PriceTable):
         return self.data.fixed_stop_price.values * benchmark_prices.close.loc[self.fixed_stop]
@@ -252,7 +252,7 @@ class SignalTable(PivotTable):
         return (self.exit_prices(price_table) - self.entry_prices(price_table)) * self.dir
 
     def eqty_risk_shares(self, price_table: PriceTable, eqty, risk, lot=None, fx=None):
-        return pda.utils.eqty_risk_shares(
+        return pandas_accessors.utils.eqty_risk_shares(
             px=self.entry_prices(price_table),
             sl=self.data.fixed_stop_price,
             eqty=eqty,
