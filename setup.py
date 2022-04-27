@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='pandas_accessors',
-    version='0.0.0.3',
+    version='0.0.0.4',
     packages=['pandas_accessors'],
     url='',
     license='',

@@ -356,6 +356,18 @@ class PeakTable(PivotTable):
         )
 
 
+class OrderTable(PivotTable):
+    mandatory_cols = ['entry_id', 'price_id', 'type']
+
+    def __init__(self, data: pd.DataFrame, name="orders"):
+        super().__init__(
+            data=data,
+            name=name,
+            start_date_col="price_id",
+            end_date_col="price_id",
+        )
+
+
 def unpivot(
     pivot_table: pd.DataFrame,
     start_date_col: str,
@@ -370,3 +382,4 @@ def unpivot(
     unpivot_table = unpivot_table.explode(new_date_col, ignore_index=True)
     # unpivot_table = unpivot_table.drop(columns=[start_date_col, end_date_col])
     return unpivot_table
+
