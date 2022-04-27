@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass
+import typing as t
 
 
 @dataclass
@@ -99,26 +100,36 @@ def kelly_fractional():
     pass
 
 
-def eqty_risk_shares(px, sl, eqty, risk, lot=None, fx=None):
-    r = sl - px
-    budget = eqty * risk
+def eqty_risk_shares(px, r_pct, eqty, risk, lot=1, fx=0):
+    nominal_sizes, clamped_sizes = init_eqty_risk_nominal_sizes(px, r_pct, eqty, risk, fx)
+    return nominal_size_to_shares(clamped_sizes, px=px, lot=lot)
 
-    if fx is not None and fx > 0:
+
+def nominal_size_to_shares(nominal_sizes, px, lot=1):
+    """translate nominal position size to shares"""
+    return round(((nominal_sizes // (px * lot)) * lot), 0)
+
+
+def init_eqty_risk_nominal_sizes(r_pct, eqty, risk, fx=0, leverage=2) -> t.Tuple[pd.Series, pd.Series]:
+    """
+    get the initial size of the position, not considering lot resolution or
+    entry price
+    cap size to less than equity x 2 (leverage)
+    """
+    budget = eqty * risk
+    if fx > 0:
         budget *= fx
 
-    if lot is None:
-        shares = budget // r
-    else:
-        shares = round(budget // (r * lot) * lot, 0)
-
-    # cap share to less than equity x 2 (includes leverage)
-    nominal_limit = eqty * 2
-    nominal_value = abs(shares * px)
-    exceed_limit = shares.loc[nominal_value > nominal_limit]
+    nominal_sizes = budget / r_pct
+    nominal_clamped_sizes = nominal_sizes.copy()
+    exceed_limit = nominal_sizes.loc[nominal_sizes > (eqty * leverage)]
     if not exceed_limit.empty:
-        shares.loc[exceed_limit.index] = (nominal_limit // nominal_value.loc[exceed_limit.index]) * exceed_limit
+        nominal_clamped_sizes.loc[exceed_limit.index] = eqty
+    return nominal_sizes, nominal_clamped_sizes
 
-    return shares
+
+def adjusted_nominal(nominal, px):
+    return (nominal / px).apply(np.ceil) * px
 
 
 def concave(ddr, floor):

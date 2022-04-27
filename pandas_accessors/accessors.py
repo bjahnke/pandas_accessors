@@ -251,15 +251,25 @@ class SignalTable(PivotTable):
     def static_returns(self, price_table: PriceTable):
         return (self.exit_prices(price_table) - self.entry_prices(price_table)) * self.dir
 
-    def eqty_risk_shares(self, price_table: PriceTable, eqty, risk, lot=None, fx=None):
+    def eqty_risk_shares(self, price_table: PriceTable, eqty, risk, lot=1, fx=0):
         return pandas_accessors.utils.eqty_risk_shares(
             px=self.entry_prices(price_table),
-            sl=self.data.fixed_stop_price,
+            r_pct=self.data.r_pct,
             eqty=eqty,
             risk=risk,
             lot=lot,
             fx=fx
         )
+
+    def init_eqty_risk_nominal_sizes(self, eqty, risk, fx=0, leverage=2) -> t.Tuple[pd.Series, pd.Series]:
+        return pandas_accessors.utils.init_eqty_risk_nominal_sizes(
+            r_pct=self.data.r_pct,
+            eqty=eqty,
+            risk=risk,
+            fx=fx,
+            leverage=leverage
+        )
+
 
 class PositionTable(PivotTable):
     """
