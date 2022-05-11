@@ -107,7 +107,7 @@ def eqty_risk_shares(px, r_pct, eqty, risk, lot=1, fx=0):
 
 def nominal_size_to_shares(nominal_sizes, px, lot=1):
     """translate nominal position size to shares"""
-    return round(((nominal_sizes // (px * lot)) * lot), 0)
+    return (nominal_sizes // (px * lot)) * lot
 
 
 def init_eqty_risk_nominal_sizes(r_pct, eqty, risk, fx=0, leverage=1) -> t.Tuple[pd.Series, pd.Series]:
