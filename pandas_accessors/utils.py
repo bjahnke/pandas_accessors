@@ -101,7 +101,7 @@ def kelly_fractional():
 
 
 def eqty_risk_shares(px, r_pct, eqty, risk, lot=1, fx=0):
-    nominal_sizes, clamped_sizes = init_eqty_risk_nominal_sizes(px, r_pct, eqty, risk, fx)
+    nominal_sizes, clamped_sizes = init_eqty_risk_nominal_sizes(r_pct, eqty, risk, fx)
     return nominal_size_to_shares(clamped_sizes, px=px, lot=lot)
 
 
@@ -110,7 +110,7 @@ def nominal_size_to_shares(nominal_sizes, px, lot=1):
     return round(((nominal_sizes // (px * lot)) * lot), 0)
 
 
-def init_eqty_risk_nominal_sizes(r_pct, eqty, risk, fx=0, leverage=2) -> t.Tuple[pd.Series, pd.Series]:
+def init_eqty_risk_nominal_sizes(r_pct, eqty, risk, fx=0, leverage=1) -> t.Tuple[pd.Series, pd.Series]:
     """
     get the initial size of the position, not considering lot resolution or
     entry price
